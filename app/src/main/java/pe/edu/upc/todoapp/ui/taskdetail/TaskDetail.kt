@@ -24,18 +24,24 @@ fun TaskDetail(
     task: String? = null,
     onSaveTask: (String) -> Unit
 ) {
+    val initialText = task ?: ""
     val text = remember {
-        mutableStateOf(task?:"")
+        mutableStateOf(initialText)
     }
+
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                onSaveTask(text.value)
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.Done,
-                    contentDescription = "Done"
-                )
+            if (text.value.isNotEmpty() && text.value != initialText) {
+                FloatingActionButton(
+                    onClick = {
+                        onSaveTask(text.value)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Done,
+                        contentDescription = "Done"
+                    )
+                }
             }
         }
     ) { paddingValues ->
@@ -53,11 +59,12 @@ fun TaskDetail(
                 },
                 onValueChange = { newText ->
                     text.value = newText
-                })
+                }
+            )
         }
-
     }
 }
+
 
 @Preview
 @Composable

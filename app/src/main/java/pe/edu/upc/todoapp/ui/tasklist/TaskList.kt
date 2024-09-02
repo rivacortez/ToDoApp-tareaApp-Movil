@@ -48,17 +48,14 @@ fun TaskList(
                 DraggableTask(
                     task = task,
                     onSelectTask = { onSelectTask(index) },
-                    onDeleteTask = { taskList.removeAt(index) }
+                    onDeleteTask = {
+
+                        taskList.removeAt(index)
+                    }
                 )
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TaskListPreview() {
-    TaskList()
 }
 
 @Composable
@@ -69,10 +66,12 @@ private fun DraggableTask(
 ) {
     var offsetX by remember { mutableStateOf(0f) }
     val threshold = -200f
+    val isDeleted = remember { mutableStateOf(false) }
 
 
-    LaunchedEffect(key1 = offsetX) {
-        if (offsetX < threshold) {
+    LaunchedEffect(offsetX) {
+        if (offsetX < threshold && !isDeleted.value) {
+            isDeleted.value = true
             onDeleteTask()
         }
     }
@@ -107,4 +106,9 @@ private fun DraggableTask(
                 .padding(16.dp)
         )
     }
+}
+@Preview(showBackground = true)
+@Composable
+fun TaskListPreview() {
+    TaskList()
 }
