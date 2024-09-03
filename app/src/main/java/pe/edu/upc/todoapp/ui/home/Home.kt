@@ -71,10 +71,7 @@ sealed class Routes(val route: String) {
     }
 }
 
-/*
-  users
-  users/{id}
- */
+
 
 @Preview
 @Composable
