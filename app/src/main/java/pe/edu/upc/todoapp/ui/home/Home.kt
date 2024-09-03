@@ -1,7 +1,8 @@
 package pe.edu.upc.todoapp.ui.home
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
@@ -13,6 +14,7 @@ import androidx.navigation.navArgument
 import pe.edu.upc.todoapp.ui.taskdetail.TaskDetail
 import pe.edu.upc.todoapp.ui.tasklist.TaskList
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun Home() {
     val navController = rememberNavController()
@@ -32,7 +34,7 @@ fun Home() {
                     navController.navigate(Routes.TaskDetail.routeWithoutArgument)
                 },
                 onDeleteTask = { index ->
-                    // Elimina la tarea del estado principal
+
                     tasks.value = tasks.value.toMutableList().apply {
                         removeAt(index)
                     }

@@ -10,11 +10,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,7 +44,6 @@ fun TaskList(
         }
     ) { paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
-
             itemsIndexed(tasks, key = { index, _ -> index }) { index, task ->
                 DraggableTask(
                     task = task,
@@ -57,6 +58,7 @@ fun TaskList(
 }
 
 
+
 @Composable
 private fun DraggableTask(
     task: String,
@@ -66,15 +68,40 @@ private fun DraggableTask(
     var offsetX by remember { mutableStateOf(0f) }
     val limit = -200f
     val isDeleted = remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(offsetX) {
-
         if (offsetX < limit && !isDeleted.value) {
-            isDeleted.value = true
-            onDeleteTask()
+            showDeleteDialog = true
             offsetX = 0f
         }
     }
+
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Confirmar Eliminación") },
+            text = { Text("¿Está seguro de que desea eliminar esta tarea?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    isDeleted.value = true
+                    showDeleteDialog = false
+                    onDeleteTask()
+                }) {
+                    Text("Continuar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeleteDialog = false
+                }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
 
     if (!isDeleted.value) {
         Card(
@@ -89,7 +116,6 @@ private fun DraggableTask(
                         offsetX += delta
                     },
                     onDragStopped = {
-
                         if (offsetX < limit) {
                             offsetX = limit
                         } else {
