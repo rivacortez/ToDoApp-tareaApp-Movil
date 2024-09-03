@@ -14,10 +14,14 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -33,6 +37,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -63,7 +68,12 @@ fun TaskList(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { onAddTask() }) {
+            FloatingActionButton(onClick = {
+
+                onAddTask()
+
+            },
+                ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add")
             }
         }
@@ -195,3 +205,5 @@ private fun DraggableTask(
 fun TaskListPreview() {
     TaskList()
 }
+
+

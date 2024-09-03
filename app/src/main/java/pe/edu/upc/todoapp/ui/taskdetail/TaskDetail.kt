@@ -1,5 +1,6 @@
 package pe.edu.upc.todoapp.ui.taskdetail
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,11 +17,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 
 
 @Composable
 fun TaskDetail(
+
     task: String? = null,
     onSaveTask: (String) -> Unit
 ) {
@@ -28,14 +31,18 @@ fun TaskDetail(
     val text = remember {
         mutableStateOf(initialText)
     }
-
+    val context= LocalContext.current
     Scaffold(
+
         floatingActionButton = {
             if (text.value.isNotEmpty() && text.value != initialText) {
                 FloatingActionButton(
+
                     onClick = {
                         onSaveTask(text.value)
-                    }
+                        Toast.makeText(context, "Se elimina arrastrando a la izquierda", Toast.LENGTH_SHORT).show()
+                    },
+
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Done,
@@ -72,4 +79,10 @@ fun TaskDetailPreview() {
     TaskDetail {
 
     }
+}
+
+@Composable
+fun testing() {
+
+
 }
