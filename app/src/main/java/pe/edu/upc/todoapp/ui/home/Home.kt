@@ -23,23 +23,32 @@ fun Home() {
 
     NavHost(navController = navController, startDestination = Routes.TaskList.route) {
         composable(route = Routes.TaskList.route) {
-            TaskList(tasks = tasks.value, onSelectTask = { index ->
-                navController.navigate("${Routes.TaskDetail.route}/$index")
-            }) {
-                navController.navigate(Routes.TaskDetail.routeWithoutArgument)
-            }
+            TaskList(
+                tasks = tasks.value,
+                onSelectTask = { index ->
+                    navController.navigate("${Routes.TaskDetail.route}/$index")
+                },
+                onAddTask = {
+                    navController.navigate(Routes.TaskDetail.routeWithoutArgument)
+                },
+                onDeleteTask = { index ->
+                    // Elimina la tarea del estado principal
+                    tasks.value = tasks.value.toMutableList().apply {
+                        removeAt(index)
+                    }
+                }
+            )
         }
         composable(
             route = Routes.TaskDetail.routeWithArgument,
             arguments = listOf(navArgument(Routes.TaskDetail.argument) { type = NavType.IntType })
         ) { backStackEntry ->
-            val index = backStackEntry.arguments?.getInt(Routes.TaskDetail.argument)?: return@composable
+            val index = backStackEntry.arguments?.getInt(Routes.TaskDetail.argument) ?: return@composable
 
-            val selectedTask = if (index == -1 )  null else tasks.value[index]
+            val selectedTask = if (index == -1) null else tasks.value[index]
 
-            TaskDetail (task = selectedTask){ newTask ->
-
-                if (selectedTask == null ) {
+            TaskDetail(task = selectedTask) { newTask ->
+                if (selectedTask == null) {
                     tasks.value += newTask
                 } else {
                     tasks.value[index] = newTask

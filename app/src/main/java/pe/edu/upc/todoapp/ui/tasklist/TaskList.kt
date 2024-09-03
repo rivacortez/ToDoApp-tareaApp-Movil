@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,10 +31,9 @@ import kotlin.math.roundToInt
 fun TaskList(
     tasks: List<String> = emptyList(),
     onSelectTask: (Int) -> Unit = {},
-    onAddTask: () -> Unit = {}
+    onAddTask: () -> Unit = {},
+    onDeleteTask: (Int) -> Unit = {}
 ) {
-    val taskList = remember { mutableStateListOf(*tasks.toTypedArray()) }
-
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = { onAddTask() }) {
@@ -44,19 +42,20 @@ fun TaskList(
         }
     ) { paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
-            itemsIndexed(taskList) { index, task ->
+
+            itemsIndexed(tasks, key = { index, _ -> index }) { index, task ->
                 DraggableTask(
                     task = task,
                     onSelectTask = { onSelectTask(index) },
                     onDeleteTask = {
-
-                        taskList.removeAt(index)
+                        onDeleteTask(index)
                     }
                 )
             }
         }
     }
 }
+
 
 @Composable
 private fun DraggableTask(
@@ -65,48 +64,54 @@ private fun DraggableTask(
     onDeleteTask: () -> Unit
 ) {
     var offsetX by remember { mutableStateOf(0f) }
-    val threshold = -200f
+    val limit = -200f
     val isDeleted = remember { mutableStateOf(false) }
 
-
     LaunchedEffect(offsetX) {
-        if (offsetX < threshold && !isDeleted.value) {
+
+        if (offsetX < limit && !isDeleted.value) {
             isDeleted.value = true
             onDeleteTask()
+            offsetX = 0f
         }
     }
 
-    Card(
-        onClick = onSelectTask,
-        modifier = Modifier
-            .offset { IntOffset(offsetX.roundToInt(), 0) }
-            .fillMaxWidth()
-            .padding(4.dp)
-            .draggable(
-                orientation = Orientation.Horizontal,
-                state = rememberDraggableState { delta ->
-                    offsetX += delta
-                },
-                onDragStopped = {
-                    if (offsetX < threshold) {
-                        offsetX = threshold
-                    } else {
-                        offsetX = 0f
-                    }
-                }
-            )
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { onSelectTask() })
-            }
-    ) {
-        Text(
-            text = task,
+    if (!isDeleted.value) {
+        Card(
+            onClick = onSelectTask,
             modifier = Modifier
+                .offset { IntOffset(offsetX.roundToInt(), 0) }
                 .fillMaxWidth()
-                .padding(16.dp)
-        )
+                .padding(4.dp)
+                .draggable(
+                    orientation = Orientation.Horizontal,
+                    state = rememberDraggableState { delta ->
+                        offsetX += delta
+                    },
+                    onDragStopped = {
+
+                        if (offsetX < limit) {
+                            offsetX = limit
+                        } else {
+                            offsetX = 0f
+                        }
+                    }
+                )
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { onSelectTask() })
+                }
+        ) {
+            Text(
+                text = task,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+        }
     }
 }
+
+
 @Preview(showBackground = true)
 @Composable
 fun TaskListPreview() {
